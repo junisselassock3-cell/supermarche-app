@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from datetime import datetime
+import os
 from flask_cors import CORS
 import sqlite3
 app = Flask(__name__)
@@ -97,4 +98,6 @@ def acheter_produit(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0",
+            port=int(os.environ.get("PORT", 5000)))
+    
