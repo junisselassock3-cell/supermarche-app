@@ -4,6 +4,9 @@ let currentModal = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM pret");
+    chargerVentes();
+    fetchProduits();
+
     const btn = document.getElementById("addBtn");
     const modal = document.getElementById("modalContainer");
     const actionBtn = document.getElementById("modalActionBtn");
@@ -13,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Modale =", modal);
     console.log("MODALEB=", actionBtn)
     console.log(document.getElementById("modalActionBtn"))
-    
     if(btn){
         btn.addEventListener("click", () => {
              console.log("Clik ok");
@@ -107,6 +109,7 @@ async function fetchProduits() {
         `;
     });
 }
+
 function ajouterProduit() {
     console.log("CLICK DETECTE");
     const nom = document.getElementById("nom").value;
@@ -174,20 +177,15 @@ async function vendreProduit() {
     try {
         console.log("VENTE CLICK");
         console.log("METHODE = PUT")
-
         const id = currentId;
         const quantite = document.getElementById("quantite").value;
-
         console.log("ID =", id);
         console.log("Quantité =", quantite);
-
         if (!quantite || quantite <= 0) {
             alert("Quantité invalide");
             return;
         }
-
         console.log("ENVOI FETCH...");
-
         const response = await fetch(`/api/produits/${id}/vendre`, {
             method: "PUT",
             headers: {
@@ -195,18 +193,30 @@ async function vendreProduit() {
             },
             body: JSON.stringify({ quantite })
         });
-
         console.log("FETCH OK");
-
         const data = await response.json();
         console.log("DATA =", data);
-
         alert(data.message);
-
         await fetchProduits();
         closeModal();
-
     } catch (error) {
         console.error("ERREUR JS :", error);
     }
+    chargerVentes()
+}
+async function chargerVentes() {
+    const res = await fetch("/api/ventes");
+    ventes = await res.json(); // sauvegarde
+    const tbody = document.getElementById("ventesTable");
+    tbody.innerHTML = "";
+    ventes.forEach(v => {
+        tbody.innerHTML += `
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-2">${v.produit}</td>
+                <td class="px-6 py-2">${v.quantite}</td>
+                <td class="px-6 py-2">${v.total} F</td>
+                <td class="px-6 py-2">${new Date(v.date).toLocaleDateString()}</td>
+            </tr>
+        `;
+    });
 }
