@@ -11,7 +11,6 @@ database_url = "postgresql://supermarche_db_user:Gr10P9VOF2Y1uK2IiE6ddbCgwCDhDqf
 
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
-
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -133,18 +132,60 @@ def acheter_produit(id):
     return jsonify({"message": f"Achat de {quantite} {produit.nom} effectué"})
 @app.route("/api/ventes", methods=["GET"])
 def get_ventes():
-    ventes = Vente.query.all()
+
+    ventes = Vente.query.order_by(Vente.id.desc()).all()
+
     result = []
-    for v in ventes:
+
+    for vente in ventes:
+
+        produit = Produit.query.get(vente.produit_id)
+
         result.append({
-            "id": v.id,
-            "produit": v.Produit.nom,
-            "quantite": v.quantite,
-            "total": v.total,
-            "date": v.date
+            "id": vente.id,
+            "produit": produit.nom,
+            "quantite": vente.quantite,
+            "total": vente.total,
+            "date": vente.date
         })
 
     return jsonify(result)
+@app.route("/api/dashboard")
+def dashboard():
+    total_produits = Produit.query.count()
+
+    ventes = Vente.query.all()
+
+    total_ventes = Vente.query.count()
+
+    chiffre_affaire = sum(v.total for v in ventes)
+
+    stock_faible = Produit.query.filter(Produit.stock < 5).count()
+
+    return jsonify({
+        "total_produits": total_produits,
+        "total_ventes": total_ventes,
+        "chiffre_affaire": chiffre_affaire,
+        "stock_faible": stock_faible
+    })
+
+@app.route("/api/stats/ventes")
+def stats_ventes():
+
+    ventes = Vente.query.all()
+
+    data = {}
+
+    for vente in ventes:
+
+        produit = Produit.query.get(vente.produit_id)
+
+        if produit.nom in data:
+            data[produit.nom] += vente.quantite
+        else:
+            data[produit.nom] = vente.quantite
+
+    return jsonify(data)
 
 # 🔴 RUN
 if __name__ == "__main__":

@@ -12,6 +12,37 @@
     <header class="bg-green-600 text-white p-4 shadow">
         <h1 class="text-2xl font-bold">🛒 Gestion Supermarché</h1>
     </header>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+      <div class="bg-white shadow rounded-2xl p-6 border">
+        <h3 class="text-gray-500 text-sm">📦 Produits</h3>
+        <p id="totalProduits" class="text-3xl font-bold mt-2">0</p>
+      </div>
+
+      <div class="bg-white shadow rounded-2xl p-6 border">
+        <h3 class="text-gray-500 text-sm">💰 Chiffre d'affaires</h3>
+        <p id="chiffreAffaire" class="text-3xl font-bold mt-2">0 FCFA</p>
+      </div>
+
+      <div class="bg-white shadow rounded-2xl p-6 border">
+        <h3 class="text-gray-500 text-sm">🛒 Ventes</h3>
+        <p id="totalVentes" class="text-3xl font-bold mt-2">0</p>
+      </div>
+
+      <div class="bg-white shadow rounded-2xl p-6 border">
+        <h3 class="text-gray-500 text-sm">⚠ Stock faible</h3>
+        <p id="stockFaible" class="text-3xl font-bold mt-2">0</p>
+      </div>
+
+    </div>
+    <div class="bg-white shadow rounded-2xl p-6 mt-8">
+    <h2 class="text-xl font-bold mb-4">
+        📊 Ventes par produit
+    </h2>
+
+    <canvas id="salesChart"></canvas>
+</div>
+    
 
     <main class="p-6">
         <!-- Bouton Ajouter -->
@@ -63,6 +94,7 @@
             </div>
         </div>
     </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
  <script defer src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

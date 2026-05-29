@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM pret");
     chargerVentes();
     fetchProduits();
+    chargerDashboard();
+    chargerGraphique();
 
     const btn = document.getElementById("addBtn");
     const modal = document.getElementById("modalContainer");
@@ -28,8 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
 });
 
-  
-
 // Nouvelle version de openModal pour edit/sell
 function openModal(type, id = null){
     const modal = document.getElementById("modalContainer");
@@ -41,7 +41,6 @@ function openModal(type, id = null){
     currentModal = type;
     currentId = id;
     modal.classList.remove("hidden");
-
     ;
     body.innerHTML = "";
     if (type === "add") {
@@ -202,7 +201,9 @@ async function vendreProduit() {
     } catch (error) {
         console.error("ERREUR JS :", error);
     }
-    chargerVentes()
+    chargerVentes();
+    chargerDashboard();
+    chargerGraphique();
 }
 async function chargerVentes() {
     const res = await fetch("/api/ventes");
@@ -219,4 +220,63 @@ async function chargerVentes() {
             </tr>
         `;
     });
+}
+
+async function chargerDashboard() {
+
+    const res = await fetch("/api/dashboard");
+
+    const data = await res.json();
+
+    document.getElementById("totalProduits").innerText =
+        data.total_produits;
+
+    document.getElementById("totalVentes").innerText =
+        data.total_ventes;
+
+    document.getElementById("chiffreAffaire").innerText =
+        data.chiffre_affaire + " FCFA";
+
+    document.getElementById("stockFaible").innerText =
+        data.stock_faible;
+}
+
+let salesChart = null;
+
+async function chargerGraphique() {
+
+    const res = await fetch("/api/stats/ventes");
+
+    const data = await res.json();
+
+    const labels = Object.keys(data);
+
+    const values = Object.values(data);
+
+    const ctx = document.getElementById("salesChart");
+
+    if (salesChart) {
+        salesChart.destroy();
+    }
+
+    salesChart = new Chart(ctx, {
+
+    type: "bar",
+
+    data: {
+        labels: labels,
+
+        datasets: [{
+            label: "Quantité vendue",
+            data: values,
+            barThickness: 40,
+            borderRadius: 10
+        }]
+    },
+
+    options: {
+        responsive: true,
+        indexAxis: 'y'
+    }
+});
 }
