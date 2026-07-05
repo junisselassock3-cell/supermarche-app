@@ -1,0 +1,20 @@
+{% extends "base.html" %} 
+{% block content %}
+     <main class="p-6">
+        <div class="overflow-x-auto bg-white rounded shadow">
+            <h2 class="text-xl font-bold mt-6 mb-2">Historique des ventes </h2>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-green-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Produit</th>
+                        <th class="px-6 py-3 text-left">Quantité</th>
+                        <th class="px-6 py-3 text-left">Total</th>
+                        <th class="px-6 py-3 text-left">Date</th>
+                    </tr>
+                </thead>
+                <tbody id="ventesTable" class="divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+    </main>
+
+{% endblock %}

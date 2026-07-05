@@ -1,22 +1,52 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, session,flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "super-secret-key"
 CORS(app)
 
 # 🔴 CONFIG DATABASE (Render PostgreSQL)
-database_url = "postgresql://supermarche_db_user:Gr10P9VOF2Y1uK2IiE6ddbCgwCDhDqfB@dpg-d7s077m7r5hc739lamrg-a.ohio-postgres.render.com/supermarche_db"
+#database_url = "postgresql://supermarche_db_user:Gr10P9VOF2Y1uK2IiE6ddbCgwCDhDqfB@dpg-d7s077m7r5hc739lamrg-a.ohio-postgres.render.com/supermarche_db"
 
-if database_url and database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url 
+#if database_url and database_url.startswith("postgres://"):
+#    database_url = database_url.replace("postgres://", "postgresql://", 1)
+#app.config["SQLALCHEMY_DATABASE_URI"] = database_url 
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///supermarche.db" 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
 print("DATABASE URI:", app.config["SQLALCHEMY_DATABASE_URI"])
+# Route vers les autres pages
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+@app.route("/produits")
+def produits():
+    produits = Produit.query.all()
+    return render_template("produits.html", produits = produits)
+
+@app.route("/ventes")
+def ventes():
+    ventes = Vente.query.all()
+    return render_template("ventes.html", ventes = ventes)
+
+@app.route("/login")
+def login():
+    
+    return render_template("login.html")
+@app.context_processor
+def injet_admin():
+    admin = None
+    if "admin_id" in session:
+        admin = Admin.query.get(session["admin_id"])
+        return dict(admin=admin)
 
 # 🔴 MODEL
 class Produit(db.Model):
@@ -35,19 +65,38 @@ class Vente(db.Model):
     quantite = db.Column(db.Integer,nullable = False)
     total = db.Column(db.Float, nullable = False)
     date = db.Column(db.DateTime, default = db.func.current_timestamp())
+class Admin(db.Model):
+    __tablename__ ="admins"
+    id = db.Column(db.Integer, primary_key =True)
+
+    username = db.Column(db.String(100), unique = True, nullable = False)
+    password = db.Column(db.String(255), nullable = False)
+        
 
 # 🔴 CREATE TABLES
 with app.app_context():
     db.create_all()
+    admin = Admin.query.filter_by(username = "admin").first()
+    if not admin:
+        hashed_password = generate_password_hash("admin123")
+        new_admin = Admin(
+            username = "admin", password = hashed_password
+        )
+        db.session.add(new_admin)
+        db.session.commit()
+        print("admin crée")
 
 # 🔴 ROUTES
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return redirect("/login")
 
 # ➜ Ajouter produit
 @app.route("/api/produits", methods=["POST"])
 def ajouter_produit():
+    if "admin_id" not in session:
+        return jsonify({"message": "Non autorisé"}), 401
+
     data = request.get_json()
 
     nouveau = Produit(
@@ -60,6 +109,31 @@ def ajouter_produit():
     db.session.commit()
 
     return jsonify({"message": "Produit ajouté"})
+@app.route("/login", methods=[ "GET","POST"])
+def m_login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+    admin = Admin.query.filter_by(username=username).first()
+
+    if not admin:
+        flash( "Utilisateur introuvable"), 404
+        return render_template("login.html")
+    
+
+    if not check_password_hash(admin.password, password):
+        flash( "Mot de passe incorrect"), 401
+        return render_template("login.html")
+
+    session["admin_id"] = admin.id
+    return redirect("/dashboard")
+
+  # return jsonify({"message": "Connexion réussie"})
+@app.route("/logout")
+def logout():
+    session.pop("admin_id", None)
+    return redirect("/login")
 
 # ➜ Récupérer produits
 @app.route("/api/produits", methods=["GET"])
@@ -151,7 +225,7 @@ def get_ventes():
 
     return jsonify(result)
 @app.route("/api/dashboard")
-def dashboard():
+def api_dashboard():
     total_produits = Produit.query.count()
 
     ventes = Vente.query.all()

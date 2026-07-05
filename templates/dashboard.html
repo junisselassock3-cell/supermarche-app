@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+           <div class="bg-blue-500 shadow rounded-2xl p-6 border hover:scale-105 transition duration-300">
+             <h3 class="text-white text-sm">📦 Produits</h3>
+             <p id="totalProduits" class="text-3xl font-bold mt-2">0</p>
+           </div>
+
+           <div class="bg-green-500 shadow rounded-2xl p-6 border hover:scale-105 transition duration-300"">
+             <h3 class="text-white text-sm">💰 Chiffre d'affaires</h3>
+             <p id="chiffreAffaire" class="text-3xl font-bold mt-2">0 FCFA</p>
+            </div>
+
+            <div class="bg-purple-500 shadow rounded-2xl p-6 border hover:scale-105 transition duration-300"">
+              <h3 class="text-white text-sm">🛒 Ventes</h3>
+              <p id="totalVentes" class="text-3xl font-bold mt-2">0</p>
+            </div>
+
+            <div class="bg-red-500 shadow rounded-2xl p-6 border hover:scale-105 transition duration-300"">
+              <h3 class="text-white text-sm">⚠ Stock faible</h3>
+              <p id="stockFaible" class="text-3xl font-bold mt-2">0</p>
+            </div>
+
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 shadow rounded-2xl p-6 mt-8">
+         <h2 class="text-xl font-bold mb-4">
+        📊 Ventes par produit
+         </h2>
+
+         <canvas id="salesChart"></canvas>
+        </div>
+
+{% endblock %}

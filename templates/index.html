@@ -12,6 +12,40 @@
     <header class="bg-green-600 text-white p-4 shadow">
         <h1 class="text-2xl font-bold">🛒 Gestion Supermarché</h1>
     </header>
+    <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow">
+
+    <h2 class="text-2xl font-bold mb-4">
+        Connexion Admin
+    </h2>
+
+    <input
+        type="text"
+        id="username"
+        placeholder="Nom utilisateur"
+        class="w-full border p-2 mb-3 rounded"
+    >
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Mot de passe"
+        class="w-full border p-2 mb-3 rounded"
+    >
+
+    <button
+        onclick="login()"
+        class="bg-blue-500 text-white px-4 py-2 rounded"
+    >
+        Se connecter
+    </button>
+    <button 
+         onclick="logout()"
+         class="bg-blue-500 text-white px-4 py-2 rounded">
+         Déconnexion
+    </button>
+
+
+</div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
       <div class="bg-white shadow rounded-2xl p-6 border">

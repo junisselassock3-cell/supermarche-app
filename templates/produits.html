@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+     <main class="p-6">
+        <!-- Bouton Ajouter -->
+        <div class="flex justify-end mb-4">
+            <button id="addBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow">
+                + Ajouter un produit
+            </button>
+        </div>
+
+        <!-- Tableau des produits -->
+        <div class="overflow-x-auto bg-white rounded shadow">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-green-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left">ID</th>
+                        <th class="px-6 py-3 text-left">Nom</th>
+                        <th class="px-6 py-3 text-left">Prix</th>
+                        <th class="px-6 py-3 text-left">Stock</th>
+                        <th class="px-6 py-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableProduits" class="divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+    </main>
+{% endblock %}    
+

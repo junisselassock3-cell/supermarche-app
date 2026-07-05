@@ -85,7 +85,6 @@ function openModal(type, id = null){
 
 // Stocker les produits pour réutilisation
 let produitsData = [];
-
 async function fetchProduits() {
     const res = await fetch("/api/produits");
     produitsData = await res.json(); // sauvegarde
@@ -279,4 +278,37 @@ async function chargerGraphique() {
         indexAxis: 'y'
     }
 });
+}
+async function login() {
+
+    const username =
+        document.getElementById("username").value;
+
+    const password =
+        document.getElementById("password").value;
+
+    const res = await fetch("/login", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            username,
+            password
+        })
+    });
+
+    const data = await res.json();
+
+    alert(data.message);
+}
+async function logout() {
+    const res = await fetch("/logout");
+    const data = await res.json();
+    alert(data.message);
+    location.reload();
+    
 }
