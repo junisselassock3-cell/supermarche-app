@@ -7,21 +7,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "super-secret-key"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-a-changer")
 CORS(app)
 
-# 🔴 CONFIG DATABASE (Render PostgreSQL)
-#database_url = "postgresql://supermarche_db_user:Gr10P9VOF2Y1uK2IiE6ddbCgwCDhDqfB@dpg-d7s077m7r5hc739lamrg-a.ohio-postgres.render.com/supermarche_db"
-
-#if database_url and database_url.startswith("postgres://"):
-#    database_url = database_url.replace("postgres://", "postgresql://", 1)
-#app.config["SQLALCHEMY_DATABASE_URI"] = database_url 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///supermarche.db" 
+# 🔴 CONFIG DATABASE
+# L'adresse de la base vient de la variable d'environnement DATABASE_URL.
+# Par défaut (en local) : SQLite.
+database_url = os.environ.get("DATABASE_URL", "sqlite:///supermarche.db")
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-print("DATABASE URI:", app.config["SQLALCHEMY_DATABASE_URI"])
 # Route vers les autres pages
 @app.route("/dashboard")
 def dashboard():
@@ -46,7 +45,7 @@ def injet_admin():
     admin = None
     if "admin_id" in session:
         admin = Admin.query.get(session["admin_id"])
-        return dict(admin=admin)
+    return dict(admin=admin)
 
 # 🔴 MODEL
 class Produit(db.Model):
