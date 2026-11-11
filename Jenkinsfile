@@ -15,7 +15,7 @@ pipeline {
                 sh '''
                     python3 -m venv .venv
                     . .venv/bin/activate
-                    pip install -r requirements-dev.txt
+                    pip install --default-timeout=120 --retries 10 -r requirements-dev.txt
                     pytest -v
                 '''
             }
