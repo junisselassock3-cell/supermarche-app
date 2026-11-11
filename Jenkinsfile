@@ -26,12 +26,14 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub',
                                                   usernameVariable: 'DOCKER_USER',
                                                   passwordVariable: 'DOCKER_TOKEN')]) {
-                    sh '''
-                        echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t "$IMAGE:latest" -t "$IMAGE:$GIT_COMMIT" .
-                        docker push "$IMAGE:latest"
-                        docker push "$IMAGE:$GIT_COMMIT"
-                    '''
+                    retry(3) {
+                        sh '''
+                            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker build -t "$IMAGE:latest" -t "$IMAGE:$GIT_COMMIT" .
+                            docker push "$IMAGE:latest"
+                            docker push "$IMAGE:$GIT_COMMIT"
+                        '''
+                    }
                 }
             }
         }
