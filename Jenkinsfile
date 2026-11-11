@@ -4,6 +4,9 @@
 
 pipeline {
     agent any
+    options {
+        disableConcurrentBuilds()
+    }
 
     environment {
         IMAGE = 'lassock/supermarche-app'
@@ -15,7 +18,7 @@ pipeline {
                 sh '''
                     python3 -m venv .venv
                     . .venv/bin/activate
-                    pip install --default-timeout=120 --retries 10 -r requirements-dev.txt
+                    pip install --default-timeout=120 --retries 10 --resume-retries 10 -r requirements-dev.txt
                     pytest -v
                 '''
             }
